@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 
 function Products() {
-
   const [products, setProducts] = useState([]);
 
   const [formData, setFormData] = useState({
@@ -11,8 +10,6 @@ function Products() {
     price: "",
     quantity: ""
   });
-
-
 
   useEffect(() => {
     fetchProducts();
@@ -32,7 +29,6 @@ function Products() {
 
   const createProduct = async () => {
     try {
-
       await api.post("/products", {
         name: formData.name,
         sku: formData.sku,
@@ -50,102 +46,168 @@ function Products() {
       });
 
     } catch (error) {
-  console.log(error);
+      console.log(error);
 
-  alert(
-    error.response?.data?.detail ||
-    error.message ||
-    "Something went wrong"
-  );
-}
+      alert(
+        error.response?.data?.detail ||
+        error.message ||
+        "Something went wrong"
+      );
+    }
   };
 
   const deleteProduct = async (id) => {
-
     try {
-
       await api.delete(`/products/${id}`);
-
       fetchProducts();
-
     } catch (error) {
-
       console.error(error);
-
     }
-
   };
 
   return (
     <div>
-      <h1>Products</h1>
+      <h1
+        style={{
+          marginBottom: "20px",
+          color: "#1e293b"
+        }}
+      >
+        Products
+      </h1>
 
-      <div style={{ marginBottom: "20px" }}>
+      <div
+        style={{
+          background: "white",
+          padding: "25px",
+          borderRadius: "16px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          marginBottom: "30px"
+        }}
+      >
+        <h2>Add Product</h2>
 
-        <input
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-
-        <input
-          name="sku"
-          placeholder="SKU"
-          value={formData.sku}
-          onChange={handleChange}
-        />
-
-        <input
-          name="price"
-          placeholder="Price"
-          value={formData.price}
-          onChange={handleChange}
-        />
-
-        <input
-          name="quantity"
-          placeholder="Quantity"
-          value={formData.quantity}
-          onChange={handleChange}
-        />
-
-        <button
-          onClick={createProduct}
+        <div
           style={{
-            background: "#2563eb",
-            color: "white",
-            border: "none",
-            padding: "10px 15px",
-            borderRadius: "8px",
-            cursor: "pointer"
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap"
           }}
         >
-          Add Product
-        </button>
+          <input
+            name="name"
+            placeholder="Product Name"
+            value={formData.name}
+            onChange={handleChange}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #d1d5db"
+            }}
+          />
 
+          <input
+            name="sku"
+            placeholder="SKU"
+            value={formData.sku}
+            onChange={handleChange}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #d1d5db"
+            }}
+          />
+
+          <input
+            name="price"
+            placeholder="Price"
+            value={formData.price}
+            onChange={handleChange}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #d1d5db"
+            }}
+          />
+
+          <input
+            name="quantity"
+            placeholder="Quantity"
+            value={formData.quantity}
+            onChange={handleChange}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #d1d5db"
+            }}
+          />
+
+          <button
+            onClick={createProduct}
+            style={{
+              background: "#2563eb",
+              color: "white",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "8px",
+              cursor: "pointer"
+            }}
+          >
+            Add Product
+          </button>
+        </div>
       </div>
 
-      <table border="1" cellPadding="10">
+      <table
+        style={{
+          width: "100%",
+          background: "white",
+          borderCollapse: "collapse",
+          borderRadius: "16px",
+          overflow: "hidden",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+        }}
+      >
         <thead>
-          <tr>
-            <th>Name</th>
-            <th>SKU</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
+          <tr
+            style={{
+              background: "#1e293b",
+              color: "white"
+            }}
+          >
+            <th style={{ padding: "15px" }}>Name</th>
+            <th style={{ padding: "15px" }}>SKU</th>
+            <th style={{ padding: "15px" }}>Price</th>
+            <th style={{ padding: "15px" }}>Quantity</th>
+            <th style={{ padding: "15px" }}>Actions</th>
           </tr>
         </thead>
 
         <tbody>
           {products.map((product) => (
-            <tr key={product.id}>
-              <td>{product.name}</td>
-              <td>{product.sku}</td>
-              <td>{product.price}</td>
-              <td>{product.quantity}</td>
+            <tr
+              key={product.id}
+              style={{
+                borderBottom: "1px solid #e5e7eb"
+              }}
+            >
+              <td style={{ padding: "15px" }}>
+                {product.name}
+              </td>
 
-              <td>
+              <td style={{ padding: "15px" }}>
+                {product.sku}
+              </td>
+
+              <td style={{ padding: "15px" }}>
+                ₹{product.price}
+              </td>
+
+              <td style={{ padding: "15px" }}>
+                {product.quantity}
+              </td>
+
+              <td style={{ padding: "15px" }}>
                 <button
                   onClick={() => deleteProduct(product.id)}
                   style={{
@@ -163,7 +225,6 @@ function Products() {
             </tr>
           ))}
         </tbody>
-
       </table>
     </div>
   );

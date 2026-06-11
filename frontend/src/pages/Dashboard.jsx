@@ -6,7 +6,7 @@ function Dashboard() {
 
   useEffect(() => {
     fetchDashboard();
-  }, []); // 
+  }, []);
 
   const fetchDashboard = async () => {
     try {
@@ -23,53 +23,110 @@ function Dashboard() {
 
   return (
     <div>
-      <h1>Dashboard</h1>
+      <h1
+        style={{
+          marginBottom: "10px",
+          color: "#1e293b"
+        }}
+      >
+        Inventory Dashboard
+      </h1>
 
-      <div style={{
-        display: "flex",
-        gap: "20px",
-        marginTop: "20px"
-      }}>
-
+      <div
+        style={{
+          display: "flex",
+          gap: "25px",
+          marginTop: "30px",
+          flexWrap: "wrap"
+        }}
+      >
         <div
           style={{
             background: "white",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            width: "220px"
+            padding: "25px",
+            borderRadius: "16px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            width: "260px"
           }}
         >
-          <h3>Total Products</h3>
-          <h1>{dashboard.total_products}</h1>
+          <p style={{ color: "#64748b", margin: 0 }}>
+            📦 Total Products
+          </p>
+
+          <h1 style={{ marginTop: "10px" }}>
+            {dashboard.total_products}
+          </h1>
         </div>
 
         <div
           style={{
             background: "white",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            width: "220px"
+            padding: "25px",
+            borderRadius: "16px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            width: "260px"
           }}
         >
-          <h3>Total Customers</h3>
-          <h1>{dashboard.total_customers}</h1>
+          <p style={{ color: "#64748b", margin: 0 }}>
+            👥 Total Customers
+          </p>
+
+          <h1 style={{ marginTop: "10px" }}>
+            {dashboard.total_customers}
+          </h1>
         </div>
 
         <div
           style={{
             background: "white",
-            padding: "20px",
-            borderRadius: "12px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            width: "220px"
+            padding: "25px",
+            borderRadius: "16px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            width: "260px"
           }}
         >
-          <h3>Total Orders</h3>
-          <h1>{dashboard.total_orders}</h1>
-        </div>
+          <p style={{ color: "#64748b", margin: 0 }}>
+            🛒 Total Orders
+          </p>
 
+          <h1 style={{ marginTop: "10px" }}>
+            {dashboard.total_orders}
+          </h1>
+        </div>
+      </div>
+
+      <div
+        style={{
+          marginTop: "40px",
+          background: "white",
+          padding: "25px",
+          borderRadius: "16px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
+        }}
+      >
+        <h2>⚠️ Low Stock Products</h2>
+
+        {dashboard.low_stock_products.length === 0 ? (
+          <p>No low stock products.</p>
+        ) : (
+          dashboard.low_stock_products.map((product) => (
+            <div
+              key={product.id}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "12px 0",
+                borderBottom: "1px solid #e5e7eb"
+              }}
+            >
+              <span>{product.name}</span>
+
+              <span>
+                Qty: {product.quantity}
+              </span>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

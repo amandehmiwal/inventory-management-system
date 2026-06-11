@@ -2,173 +2,239 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 
 function Orders() {
+  const [customers, setCustomers] = useState([]);
+  const [products, setProducts] = useState([]);
 
-    const [customers, setCustomers] = useState([]);
-    const [products, setProducts] = useState([]);
+  const [selectedCustomer, setSelectedCustomer] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
+  const [quantity, setQuantity] = useState("");
 
-    const [selectedCustomer, setSelectedCustomer] = useState("");
+  const [orderItems, setOrderItems] = useState([]);
 
-    const [selectedProduct, setSelectedProduct] = useState("");
+  useEffect(() => {
+    fetchCustomers();
+    fetchProducts();
+  }, []);
 
-    const [quantity, setQuantity] = useState("");
+  const fetchCustomers = async () => {
+    const response = await api.get("/customers");
+    setCustomers(response.data);
+  };
 
-    const [orderItems, setOrderItems] = useState([]);
+  const fetchProducts = async () => {
+    const response = await api.get("/products");
+    setProducts(response.data);
+  };
 
-    useEffect(() => {
-        fetchCustomers();
-        fetchProducts();
-    }, []);
+  const addItem = () => {
+    if (!selectedProduct || !quantity) {
+      return;
+    }
 
-    const fetchCustomers = async () => {
-        const response = await api.get("/customers");
-        setCustomers(response.data);
-    };
+    setOrderItems([
+      ...orderItems,
+      {
+        product_id: Number(selectedProduct),
+        quantity: Number(quantity)
+      }
+    ]);
 
-    const fetchProducts = async () => {
-        const response = await api.get("/products");
-        setProducts(response.data);
-    };
+    setSelectedProduct("");
+    setQuantity("");
+  };
 
-    const addItem = () => {
+  const createOrder = async () => {
+    try {
+      await api.post("/orders", {
+        customer_id: Number(selectedCustomer),
+        items: orderItems
+      });
 
-        if (!selectedProduct || !quantity) {
-            return;
-        }
+      alert("Order Created Successfully");
 
-        setOrderItems([
-            ...orderItems,
-            {
-                product_id: Number(selectedProduct),
-                quantity: Number(quantity)
-            }
-        ]);
+      setOrderItems([]);
+      setSelectedCustomer("");
 
-        setSelectedProduct("");
-        setQuantity("");
-    };
+    } catch (error) {
+      alert(
+        error.response?.data?.detail ||
+        "Something went wrong"
+      );
+    }
+  };
 
-    const createOrder = async () => {
+  return (
+    <div>
+      <h1
+        style={{
+          marginBottom: "20px",
+          color: "#1e293b"
+        }}
+      >
+        Orders
+      </h1>
 
-        try {
+      <div
+        style={{
+          background: "white",
+          padding: "25px",
+          borderRadius: "16px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          marginBottom: "30px"
+        }}
+      >
+        <h2>Create Order</h2>
 
-            await api.post("/orders", {
-                customer_id: Number(selectedCustomer),
-                items: orderItems
-            });
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap"
+          }}
+        >
+          <select
+            value={selectedCustomer}
+            onChange={(e) => setSelectedCustomer(e.target.value)}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #d1d5db"
+            }}
+          >
+            <option value="">
+              Select Customer
+            </option>
 
-            alert("Order Created Successfully");
+            {customers.map((customer) => (
+              <option
+                key={customer.id}
+                value={customer.id}
+              >
+                {customer.full_name}
+              </option>
+            ))}
+          </select>
 
-            setOrderItems([]);
-            setSelectedCustomer("");
+          <select
+            value={selectedProduct}
+            onChange={(e) => setSelectedProduct(e.target.value)}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #d1d5db"
+            }}
+          >
+            <option value="">
+              Select Product
+            </option>
 
-        } catch (error) {
+            {products.map((product) => (
+              <option
+                key={product.id}
+                value={product.id}
+              >
+                {product.name}
+              </option>
+            ))}
+          </select>
 
-            alert(error.response.data.detail);
+          <input
+            type="number"
+            placeholder="Quantity"
+            value={quantity}
+            onChange={(e) => setQuantity(e.target.value)}
+            style={{
+              padding: "10px",
+              borderRadius: "8px",
+              border: "1px solid #d1d5db"
+            }}
+          />
 
-        }
-
-    };
-
-    return (
-        <div>
-
-            <h1>Orders</h1>
-
-            <h3>Select Customer</h3>
-
-            <select value={selectedCustomer}
-                onChange={(e) => setSelectedCustomer(e.target.value)}>
-                <option>Select Customer</option>
-
-                {customers.map((customer) => (
-                    <option
-                        key={customer.id}
-                        value={customer.id}
-                    >
-                        {customer.full_name}
-                    </option>
-                ))}
-
-            </select>
-
-            <br />
-            <br />
-
-            <h3>Select Product</h3>
-
-            <select value={selectedProduct}
-                onChange={(e) => setSelectedProduct(e.target.value)}>
-                <option>Select Product</option>
-
-                {products.map((product) => (
-                    <option
-                        key={product.id}
-                        value={product.id}
-                    >
-                        {product.name}
-                    </option>
-                ))}
-
-            </select>
-
-            <br />
-            <br />
-
-            <input
-                type="number"
-                placeholder="Quantity"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-            />
-            <button
-                onClick={addItem}
-                style={{
-                    background: "#2563eb",
-                    color: "white",
-                    border: "none",
-                    padding: "10px 15px",
-                    borderRadius: "8px",
-                    cursor: "pointer"
-                }}
-            >
-                Add Item
-            </button>
-
-            <h3>Current Order</h3>
-
-            <ul>
-
-                {orderItems.map((item, index) => (
-
-                    <li key={index}>
-                        Product ID: {item.product_id}
-                        {" "}
-                        Quantity: {item.quantity}
-                    </li>
-
-                ))}
-
-            </ul>
-
-            <br />
-
-            <button
-                onClick={createOrder}
-                style={{
-                    background: "#2563eb",
-                    color: "white",
-                    border: "none",
-                    padding: "10px 15px",
-                    borderRadius: "8px",
-                    cursor: "pointer"
-                }}
-            >
-                Create Order
-            </button>
-
-
+          <button
+            onClick={addItem}
+            style={{
+              background: "#2563eb",
+              color: "white",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "8px",
+              cursor: "pointer"
+            }}
+          >
+            Add Item
+          </button>
         </div>
-    );
+      </div>
+
+      <div
+        style={{
+          background: "white",
+          padding: "25px",
+          borderRadius: "16px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+          marginBottom: "30px"
+        }}
+      >
+        <h2>Current Order</h2>
+
+        {orderItems.length === 0 ? (
+          <p>No items added yet.</p>
+        ) : (
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse"
+            }}
+          >
+            <thead>
+              <tr
+                style={{
+                  background: "#1e293b",
+                  color: "white"
+                }}
+              >
+                <th style={{ padding: "12px" }}>
+                  Product ID
+                </th>
+                <th style={{ padding: "12px" }}>
+                  Quantity
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {orderItems.map((item, index) => (
+                <tr key={index}>
+                  <td style={{ padding: "12px" }}>
+                    {item.product_id}
+                  </td>
+
+                  <td style={{ padding: "12px" }}>
+                    {item.quantity}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      <button
+        onClick={createOrder}
+        style={{
+          background: "#16a34a",
+          color: "white",
+          border: "none",
+          padding: "12px 24px",
+          borderRadius: "8px",
+          cursor: "pointer",
+          fontSize: "16px"
+        }}
+      >
+        Create Order
+      </button>
+    </div>
+  );
 }
 
 export default Orders;
