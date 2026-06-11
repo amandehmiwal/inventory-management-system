@@ -346,6 +346,45 @@ def get_order_by_id(
      "items": items
 }
 
+@app.delete("/orders/{order_id}")
+def delete_order(
+    order_id: int,
+    db: Session = Depends(get_db)
+):
+
+    order = db.query(Order).filter(
+        Order.id == order_id
+    ).first()
+
+    if order is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Order not found"
+        )
+
+    order_items = db.query(OrderItem).filter(
+        OrderItem.order_id == order_id
+    ).all()
+
+    for item in order_items:
+
+        product = db.query(Product).filter(
+            Product.id == item.product_id
+        ).first()
+
+        if product:
+            product.quantity += item.quantity
+
+        db.delete(item)
+
+    db.delete(order)
+
+    db.commit()
+
+    return {
+        "message": "Order deleted successfully"
+    }
+
 
 #dashboard
 

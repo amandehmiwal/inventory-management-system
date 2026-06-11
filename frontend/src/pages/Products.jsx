@@ -3,6 +3,7 @@ import api from "../services/api";
 
 function Products() {
   const [products, setProducts] = useState([]);
+  const [editingId, setEditingId] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -56,6 +57,45 @@ function Products() {
     }
   };
 
+  const updateProduct = async () => {
+    try {
+      await api.put(`/products/${editingId}`, {
+        name: formData.name,
+        sku: formData.sku,
+        price: Number(formData.price),
+        quantity: Number(formData.quantity)
+      });
+
+      fetchProducts();
+
+      setEditingId(null);
+
+      setFormData({
+        name: "",
+        sku: "",
+        price: "",
+        quantity: ""
+      });
+
+    } catch (error) {
+      alert(
+        error.response?.data?.detail ||
+        "Something went wrong"
+      );
+    }
+  };
+
+  const editProduct = (product) => {
+    setEditingId(product.id);
+
+    setFormData({
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+      quantity: product.quantity
+    });
+  };
+
   const deleteProduct = async (id) => {
     try {
       await api.delete(`/products/${id}`);
@@ -85,7 +125,9 @@ function Products() {
           marginBottom: "30px"
         }}
       >
-        <h2>Add Product</h2>
+        <h2>
+          {editingId ? "Edit Product" : "Add Product"}
+        </h2>
 
         <div
           style={{
@@ -143,7 +185,9 @@ function Products() {
           />
 
           <button
-            onClick={createProduct}
+            onClick={editingId
+              ? updateProduct
+              : createProduct}
             style={{
               background: "#2563eb",
               color: "white",
@@ -153,7 +197,7 @@ function Products() {
               cursor: "pointer"
             }}
           >
-            Add Product
+            {editingId ? "Update Product" : "Add Product"}
           </button>
         </div>
       </div>
@@ -208,6 +252,21 @@ function Products() {
               </td>
 
               <td style={{ padding: "15px" }}>
+
+                <button
+                  onClick={() => editProduct(product)}
+                  style={{
+                    background: "#f59e0b",
+                    color: "white",
+                    border: "none",
+                    padding: "8px 12px",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    marginRight: "8px"
+                  }}
+                >
+                  Edit
+                </button>
                 <button
                   onClick={() => deleteProduct(product.id)}
                   style={{
