@@ -43,7 +43,7 @@ docker compose up --build
 
 ### Frontend
 
-http://localhost:5173
+[http://localhost:5173](https://inventory-management-system-three-neon.vercel.app)
 
 ### Backend API
 
